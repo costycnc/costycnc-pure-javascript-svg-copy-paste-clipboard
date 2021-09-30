@@ -1,0 +1,344 @@
+<html>
+
+	<head>
+
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+
+
+	</head>
+	<body style="">
+		
+		<input type="file" id="imageInput" accept="image/*"><br><br>
+		<a href="" id="imageSelect" hidden>open an image</a></div>
+      <div>
+        <a href="" id="save">save svg</a>
+		
+    <button onclick="refresh()">refresh</button>
+	<button onclick='navigator.clipboard.writeText(svg.select(costycncx.attr("href")).attr("d"))'>copy path to clipboard</button>
+		
+    <button onclick="topng()">Save png</button><br>
+	<input type="text" id="stroke" value=50><br>
+	<input id="myRange" type="range" onmousemove="costycnc()" min="1" max="20" step="1" value="1">
+      </div><br><br>
+	lunghezza<input id="rangex" type="range" min=".1" max="10" value="1" step=".1" onmousemove="scalex();">
+    larghezza<input id="rangey" type="range" min=".1" max="10" value="1" step=".1" onmousemove="scalex();">
+
+	  <div id="svgdiv" >
+	  <p>Result:</p>
+      <svg id="svg" version="1.1" width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">
+	  </svg>
+	  </div>	  
+      <div> </div>
+      <div id="imgdiv"> </div> 
+
+<script src="potrace1.js"></script>
+<script src="d3.v5.min.js"></script>
+
+<script>
+	var val = {
+      valx: [1],valy:[1],
+    };
+var stroke,costycncx;
+var w,h,nr=0,nrx=1,nry=1;
+var vrangex=d3.select("rangex");
+var vrangey=d3.select("rangey");
+
+var dataURL;
+
+var svg=d3.select("body");
+
+//inspired from 
+//https://ourcodeworld.com/articles/read/491/how-to-retrieve-images-from-the-clipboard-with-javascript-in-the-browser	
+			
+			function retrieveImageFromClipboardAsBlob(pasteEvent, callback){
+	if(pasteEvent.clipboardData == false){
+        if(typeof(callback) == "function"){
+            callback(undefined);
+        }
+    };
+    var items = pasteEvent.clipboardData.items;
+    if(items == undefined){
+        if(typeof(callback) == "function"){
+            callback(undefined);
+        }
+    };
+    for (var i = 0; i < items.length; i++) {
+	console.log("type="+items[i].type);
+        // Skip content if not image
+        if (items[i].type.indexOf("image") == -1) continue;
+        // Retrieve image on clipboard as blob
+        var blob = items[i].getAsFile();
+        if(typeof(callback) == "function"){
+            callback(blob);
+        }
+    }
+}
+window.addEventListener("paste", function(e){
+//25.09.2021 1
+  var items = e.clipboardData.items;
+  var file = items[0].type;
+  if(file=="text/plain"){ 
+    console.log("este text plain");
+	const dT = e.clipboardData;
+	const html = dT.getData('text/plain');
+	myFunction(html);
+	
+  }else{
+    // Handle the event
+    retrieveImageFromClipboardAsBlob(e, function(imageBlob){
+        // If there's an image, display it in the canvas
+		console.log(imageBlob);
+        if(imageBlob){
+		console.log("imageblob="+imageBlob);
+		
+		
+				var reader = new FileReader();
+				reader.onload = function(){
+				dataURL = reader.result;
+				//console.log("dataURL="+dataURL);
+				};
+				reader.readAsDataURL(imageBlob);
+                setTimeout(function(){ myFunction(dataURL); }, 500);
+			}
+			});
+			
+            }
+			});
+	///////////	
+	
+				function myFunction(dataurl){
+              
+				Potrace.loadImageFromUrl(dataurl);
+				Potrace.process(function(){
+                displaySVG(1);
+				});
+				
+                }
+
+window.onload = function(){
+
+  var imageSelect = document.getElementById("imageSelect"),
+      imageInput = document.getElementById("imageInput");  
+  imageSelect.addEventListener("click", function (e) {
+  
+    imageInput.click();
+    e.preventDefault();
+  }, false);
+  
+  imageInput.addEventListener("change", function (e) {
+    handleFiles(this.files);
+  }, false);
+  
+
+  
+  document.getElementById("save").addEventListener("click", function (e) {
+	 e.target.download = "potrace" + (new Date()).toLocaleTimeString() + ".svg";
+	 var potr=Potrace.getSVG(1);
+	 e.target.href = "data:image/svg+xml;," + potr[0] ;
+  }, false);  
+  
+};
+
+function handleFiles(files) {
+  Potrace.loadImageFromFile(files[0]);
+  Potrace.process(function(){
+    //displayImg();
+    displaySVG(1);
+  });
+}
+
+//##############################################################################################################à
+function refresh() {
+  Potrace.process(function(){
+    displayImg();
+    displaySVG(1);
+
+  });
+	costycnc();
+}
+
+function costycnc() {
+
+   var svg = document.getElementsByTagNameNS("http://www.w3.org/2000/svg", "path");
+   var x = document.getElementById("myRange").value;
+   svg[0].setAttribute("stroke",'black');
+   svg[0].setAttribute("stroke-width",x);
+}
+function topng() {
+  var svg = d3.selectAll("img");
+svg.remove();
+var doctype = '<?xml version="1.0" standalone="no"?>'
+  + '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
+// serialize our SVG XML to a string.
+var source = (new XMLSerializer()).serializeToString(d3.select('svg').node());
+
+// create a file blob of our SVG.
+var blob = new Blob([ doctype + source], { type: 'image/svg+xml;charset=utf-8' });
+
+var url = window.URL.createObjectURL(blob);
+
+
+// Put the svg into an image tag so that the Canvas element can read it in.
+var img = d3.select('body').append('img')
+ .attr('width', w)
+ .attr('height',h)
+ .node();
+img.onload = function(){
+  // Now that the image has loaded, put the image into a canvas element.
+  d3.select('body').append('canvas');
+  var canvas = d3.select('canvas').node();
+  canvas.width = w;
+  canvas.height =h;
+  var ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  var canvasUrl = canvas.toDataURL("image/png");
+  //console.log(canvasUrl);
+  var link = document.createElement("a");
+
+    link.setAttribute("href", canvasUrl);
+    link.setAttribute("download", "costycnc.png");
+    link.click();
+
+
+}
+// start loading the image.
+img.src = url;
+
+}
+//####################################################################################################################
+
+function displayImg(){
+
+  var imgdiv = document.getElementById('imgdiv');
+  imgdiv.style.display = 'inline-block';
+  imgdiv.innerHTML = "<p>Input image:</p>";
+  imgdiv.appendChild(Potrace.img);
+  
+}
+
+/*
+
+ //potrace.js Potrace.getSVG(size,type)  original 
+   
+       var svg = '<svg id="svg" version="1.1" width="1000" height="1000" xmlns="http://www.w3.org/2000/svg">';
+	svg +="<defs>"	
+    svg += '<path id="costy" d="';
+    for (i = 0; i < len; i++) {
+      c = pathlist[i].curve;
+      svg += path(c);
+    }
+    if (opt_type === "curve") {
+      strokec = "black";
+      fillc = "none";
+      fillrule = '';
+    } else {
+      strokec = "none";
+      fillc = "black";
+      fillrule = ' fill-rule="evenodd"';
+    }
+    svg += '" stroke="' + strokec + '" fill="' + fillc + '"' + fillrule+ '/>';
+    svg+='</defs><use x="10" y="30" id="cos" href="#costy"></use></svg>';
+	var svg1=[];
+	svg1.push(svg);
+	svg1.push([w,h]);
+	console.log("subrutina w="+svg1[1][0]+" h="+svg1[1][1]);
+    return svg1;
+
+    sfarsit potrace.js Potrace.getSVG(size,type)  original 
+	
+	modificat
+	    var svg = "";
+    for (i = 0; i < len; i++) {
+      c = pathlist[i].curve;
+      svg += path(c);
+    }
+	var svg1=[];
+	svg1.push(svg);
+	svg1.push([w,h]);
+	console.log("subrutina w="+svg1[1][0]+" h="+svg1[1][1]);
+    return svg1;
+	
+	
+*/
+
+function displaySVG(size, type){
+ svg=d3.select("body");
+  var svgdiv = document.getElementById('svgdiv');
+  var potr=Potrace.getSVG(size, type);
+
+  
+  
+  //insert 27.09.2021 potrace return only path and now here i build svg 
+
+var svg1=d3.select("svg");		 
+var	def=svg1.append("defs");
+	def.append("path")
+		 .attr("id","costy"+nr)
+         .attr("d",potr[0]);
+    svg1.append("use")
+         .attr("idnr",nr)
+		 .attr("cosvalx",1)
+		 .attr("cosvaly",1)
+         .attr("id","cos"+nr)
+         .attr("href","#costy"+nr);		 
+nr++;
+console.log(nr);
+    //return svg1;
+  //sfarsit insert 27.09.2021
+  
+  
+  console.log(" w="+potr[1][0]+" h="+potr[1][1]);
+  w=potr[1][0];
+  h=potr[1][1];
+ svg=d3.select("body");
+dragHandler(svg.selectAll("use"));
+}
+
+
+function scalex() {
+
+var cosx=document.getElementById("rangex").value;
+var cosy=document.getElementById("rangey").value;
+costycncx.attr("transform","scale("+cosx+","+cosy+")");
+costycncx.attr("cosvalx",cosx);
+costycncx.attr("cosvaly",cosy);
+}
+
+var deltaX, deltaY;
+var dragHandler = d3.drag()
+    .on("start", function () {
+		 costycncx = d3.select(this);
+		 //cost=costycncx.attr("href");
+		 //console.log(cost);
+		 //console.log(svg.select(cost).attr("d"));
+		 document.getElementById("rangex").value=costycncx.attr("cosvalx");
+		 document.getElementById("rangey").value=costycncx.attr("cosvaly");
+		 console.log(document.getElementById("rangex").value);
+        deltaX = costycncx.attr("x") - d3.event.x;
+	    deltaY = costycncx.attr("y") - d3.event.y;}
+    )
+	
+	
+    .on("drag", function () {
+        costycncx= d3.select(this)
+		costycncx
+		
+            //.attr("x", (d3.event.x + deltaX)/val.valx[costycncx.attr("idnr")])
+            //.attr("y", (d3.event.y + deltaY)/val.valy[costycncx.attr("idnr")]);
+            .attr("x", (d3.event.x + deltaX))
+            .attr("y", (d3.event.y + deltaY));
+			//console.log(val.valx[costycncx.attr("idnr")]);
+			//console.log(val.valx[costycncx.attr("idnr")]);
+			
+			console.log(costycncx.attr("idnr"));
+			console.log(costycncx.attr("idnr"));
+    });
+dragHandler(svg.selectAll("use"));
+</script>
+
+  
+
+</body></html>
