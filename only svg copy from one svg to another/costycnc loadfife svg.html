@@ -1,0 +1,44 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset='utf-8'>
+ </head>
+ <body>
+ <button onclick="getpath()">copy primo path in secondo svg</button>
+<input type='file' accept='image/svg+xml' onchange='openFile(event)'><br>
+<div id="svgdiv"> </div>
+<svg id="daincollare" xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background-color:Beige">
+
+
+		</svg>
+
+
+<script>
+
+    function getpath(){
+	console.log("sono "+document.getElementsByTagName('path').length)+" path in document";
+	console.log("primo id path e="+document.getElementsByTagName('path')[0].getAttribute("id"));
+	let path=document.getElementsByTagName('path')[0];
+	console.log("primo path e="+document.getElementsByTagName('path')[0]+"e lo ho incollato in secondo svg");
+	document.getElementById("daincollare").appendChild(path);
+	}
+
+
+    var openFile = function(event) {
+	var reader = new FileReader();
+	if(event.target.files[0].type=="image/svg+xml"){
+	console.log("este svg");
+	reader.onload = function(){
+    //handleFiles(reader.result);
+	console.log(reader.result);
+	var svgdiv = document.getElementById('svgdiv');
+    svgdiv.style.display = 'inline-block';
+    svgdiv.innerHTML = "<p>Result:</p>" + reader.result;
+    };
+    reader.readAsText(event.target.files[0]);
+	}
+}
+
+</script>
+
+
+</body></html>
