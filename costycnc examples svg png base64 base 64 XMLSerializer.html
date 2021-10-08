@@ -1,0 +1,71 @@
+<html>
+<head>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background-color:Beige">
+<path d="M150 0 L75 200 L225 200 Z" />
+</svg>
+<script>
+//var textToSaveAsBlob = new Blob([gcode_value], {type:"text/plain"});//var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+
+//######################################################################
+
+				// serialize our SVG XML to a string.
+				//var svg = d3.select("body");
+				//svg.select("svg").attr("transform", "scale(1)");
+				//var doctype = ' < ? xml version = "1.0"
+				//standalone = "no" ? > ' + ' < !DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+				//"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" > ';
+				
+				
+                //var doctype = '<?xml version="1.0" standalone="no"?>'
+                 //+ '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+				
+				//var source = (new XMLSerializer()).serializeToString(d3.select('svg').node());
+				//svg = d3.select("body");
+				//25.09.2021 8
+				//svg.select("svg").attr("transform", "scale(" + nr1 + ") translate(-" + nrlocx + ",-" + nrlocy + ")");
+				//svg.select("svg").attr("transform","scale("+nr1+")");
+				// create a file blob of our SVG.
+				//var blob = new Blob([doctype + source], {
+					//type: 'image/svg+xml;charset=utf-8'
+				//});
+				//var url = window.URL.createObjectURL(blob);
+				// Put the svg into an image tag so that the Canvas element can read it in.
+				
+				//e.target.download = "potrace" + (new Date()).toLocaleTimeString() + ".svg";
+	 //var potr=Potrace.getSVG(1);
+	            //e.target.href = "data:image/svg+xml;," + potr[0] ;
+				/*
+				var doctype = '<?xml version="1.0" standalone="no"?>'
+                 + '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+                // serialize our SVG XML to a string.
+                var source = (new XMLSerializer()).serializeToString(d3.select('svg').node());
+                // create a file blob of our SVG.
+                var blob = new Blob([ doctype + source], { type: 'image/svg+xml;charset=utf-8' });
+                var url = window.URL.createObjectURL(blob);
+				var img = d3.select('body').append('img').attr('src', url);
+				*/
+				//per serializare orice var svg_xml = (new XMLSerializer()).serializeToString(svg);
+				//svg_xml = (new XMLSerializer()).serializeToString(svg);
+				var source = (new XMLSerializer()).serializeToString(d3.select('svg').node());
+				var par='data:image/svg+xml;base64,' + btoa(source);
+				var img = d3.select('body').append('img').attr('src', par);
+                //img.src =par;
+
+				
+				
+		/*var xml = new DOMParser().parseFromString( text, 'image/svg+xml' ); // application/xml
+			parseNode( xml.documentElement, {
+			fill: '#000',
+			fillOpacity: 1,
+			strokeOpacity: 1,
+			strokeWidth: 1,
+			strokeLineJoin: 'miter',
+			strokeLineCap: 'butt',
+			strokeMiterLimit: 4
+		} );*/
+</script>
+</body>
+</html>
