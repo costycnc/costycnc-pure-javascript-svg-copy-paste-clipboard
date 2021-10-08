@@ -1,0 +1,110 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset='utf-8'>
+  <script type="text/javascript" src="d3.v5.min.js"></script>
+  <style>
+.PannelloAdminDomainButton {
+	width: 99%;
+	height: 40px;
+	border: 1px solid #0e5e96;
+	border-radius: 4px;
+	background: transparent;
+	color: #0e5e96;
+	font-weight: 700;
+	margin-bottom: 15px;
+	cursor: pointer;
+}
+</style>
+ </head>
+ <body>
+ <!--button onclick="getpath()">copy primo path in secondo svg</button-->
+<input type='file' accept='image/svg+xml' onchange='openFile(event)' class="PannelloAdminDomainButton"><br>
+<div id="svgdiv"> </div>
+<button onclick='appen("#daincollare");' class="PannelloAdminDomainButton">paste</button>
+<svg id="daincollare" xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background-color:Beige">
+
+
+		</svg>
+
+
+<script>
+var pth,costycnc,nr=0;
+
+    function getpath(){
+	console.log("sono "+document.getElementsByTagName('path').length)+" path in document";
+	console.log("primo id path e="+document.getElementsByTagName('path')[0].getAttribute("id"));
+	let path=document.getElementsByTagName('path')[0];
+	console.log("primo path e="+document.getElementsByTagName('path')[0]+"e lo ho incollato in secondo svg");
+	document.getElementById("#daincollare").appendChild(path);
+	}
+
+
+    var openFile = function(event) {
+	var reader = new FileReader();
+	if(event.target.files[0].type=="image/svg+xml"){
+	console.log("este svg");
+	reader.onload = function(){
+    //handleFiles(reader.result);
+	console.log(reader.result);
+	var svgdiv = document.getElementById('svgdiv');
+    svgdiv.style.display = 'inline-block';
+    svgdiv.innerHTML = "<p>Result:</p>" + reader.result;
+    };
+    reader.readAsText(event.target.files[0]);
+	}
+}
+//################################################################################
+function appen(id){
+
+var pth=document.getElementsByTagName('path')[0].getAttribute("d");
+console.log(pth);
+var svg1=d3.select(id);
+console.log(id);
+ var svg2=svg1.append("defs");
+svg2.append("path")
+    .attr("id","ondax"+nr)
+	.attr("d",pth);
+	
+svg1.append("use")
+    .attr("id","ondx"+nr)
+    .attr("href","#ondax"+nr);	
+	nr++;
+
+dragHandler(d3.select("body").selectAll("use"));
+
+}
+// muove elementi
+var deltaX, deltaY;
+var dragHandler = d3.drag()
+    .on("start", function () {
+		 costycnc = d3.select(this);
+		 //console.log(d3.select(costycnc.attr("href")).attr("d"));
+		 console.log(costycnc.attr("id"));
+		 pth=d3.select(costycnc.attr("href")).attr("d");
+        deltaX = costycnc.attr("x") - d3.event.x;
+	   deltaY = costycnc.attr("y") - d3.event.y;}
+    )
+	
+	
+    .on("drag", function () {
+        costycnc= d3.select(this);
+		
+		costycnc
+            .attr("x", d3.event.x + deltaX)
+            .attr("y", d3.event.y + deltaY);
+	if(costycnc.attr("id"),"fond0"){
+	xfond0=d3.event.x + deltaX;
+	yfond0=d3.event.y + deltaY;
+	}
+	
+    });	
+
+	dragHandler(d3.select("body").selectAll("use"));
+
+	
+
+
+</script>
+
+
+</body></html>
