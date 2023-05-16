@@ -1,0 +1,5 @@
+<svg width="10cm" height="10cm" xmlns="http://www.w3.org/2000/svg">
+<circle fill="black" cx="5cm" cy="5cm" r="5cm"></circle>
+<circle fill="white" cx="5cm" cy="5cm" r="4cm"></circle>
+<circle fill="black" cx="5cm" cy="5cm" r="3cm"></circle>
+</svg>
